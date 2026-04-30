@@ -9,13 +9,15 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink:    #0f0f0f;
-    --paper:  #f5f0e8;
-    --warm:   #e8e0d0;
-    --red:    #c0392b;
-    --gold:   #b5860d;
-    --mid:    #6b6560;
-    --light:  #faf7f2;
+    --ink:    #1e2340;
+    --paper:  #ffffff;
+    --warm:   #f0f2f8;
+    --red:    #e8445a;
+    --gold:   #f07c3a;
+    --mid:    #6b7280;
+    --light:  #f9f9fb;
+    --navy-light: #2a3158;
+    --red-pale: #fde8eb;
   }
 
   html, body {
@@ -54,7 +56,7 @@
   /* DARK theme (title, photo slides) */
   .dark {
     background: var(--ink);
-    color: var(--paper);
+    color: #ffffff;
   }
 
   /* LIGHT theme (framework, steps, writing) */
@@ -65,7 +67,7 @@
 
   /* WARM theme (discussion, takeaways) */
   .warm {
-    background: var(--paper);
+    background: var(--warm);
     color: var(--ink);
   }
 
@@ -103,7 +105,7 @@
     color: var(--mid);
     margin-bottom: 18px;
   }
-  .dark .eyebrow { color: #888; }
+  .dark .eyebrow { color: #8892b0; }
 
   h1.display {
     font-family: 'DM Serif Display', serif;
@@ -139,7 +141,7 @@
     font-weight: 300;
     max-width: 560px;
   }
-  .dark p.lead { color: #ccc; }
+  .dark p.lead { color: #a8b4d0; }
   p.body {
     font-size: 16px;
     line-height: 1.7;
@@ -162,17 +164,18 @@
     margin-top: 8px;
   }
   .bullet-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    font-size: 17px;
+    padding: 11px 14px;
+    font-size: 16px;
     line-height: 1.5;
     display: flex;
-    gap: 14px;
+    gap: 12px;
     align-items: flex-start;
+    background: var(--red-pale);
+    border-left: 3px solid var(--red);
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 8px;
+    color: #2a2a3a;
   }
-  .light .bullet-list li { border-color: rgba(0,0,0,0.08); }
-  .dark .bullet-list li { border-color: rgba(255,255,255,0.07); color: #ddd; }
-  .bullet-list li:last-child { border-bottom: none; }
   .bullet-list li .icon {
     flex-shrink: 0;
     width: 26px;
@@ -245,7 +248,7 @@
   /* ── PHOTO SLIDE ── */
   .photo-frame {
     flex: 1;
-    background: #1a1a1a;
+    background: #151929;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -286,7 +289,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #1e1e1e;
+    border-bottom: 1px solid #2a3158;
   }
   .photo-header .ph-title {
     font-family: 'DM Serif Display', serif;
@@ -304,7 +307,7 @@
     display: flex;
     gap: 8px;
     padding: 12px 40px;
-    border-top: 1px solid #1a1a1a;
+    border-top: 1px solid #2a3158;
   }
   .chip {
     font-family: 'Space Mono', monospace;
@@ -312,9 +315,9 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 5px 12px;
-    border: 1px solid #2a2a2a;
+    border: 1px solid #2a3158;
     border-radius: 100px;
-    color: #555;
+    color: #4a5480;
   }
   .chip.active-chip {
     border-color: var(--red);
@@ -341,13 +344,13 @@
     font-size: 10px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #444;
+    color: #8892b0;
     padding-top: 10px;
-    border-top: 1px solid #222;
+    border-top: 1px solid #2a3158;
   }
   .meta-item span {
     display: block;
-    color: #888;
+    color: #5a6490;
     margin-top: 4px;
   }
 
@@ -431,7 +434,7 @@
   /* ── HOMEWORK BOX ── */
   .hw-box {
     background: var(--ink);
-    color: var(--paper);
+    color: #ffffff;
     padding: 28px 32px;
     margin-top: 28px;
     border-radius: 4px;
@@ -441,13 +444,13 @@
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--red);
     margin-bottom: 10px;
   }
   .hw-box p {
     font-size: 15px;
     line-height: 1.7;
-    color: #bbb;
+    color: #a8b4d0;
   }
 
   /* ── MESSAGE TEMPLATE ── */
@@ -503,9 +506,9 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 1px solid #333;
-    background: rgba(15,15,15,0.8);
-    color: #aaa;
+    border: 1px solid #2a3158;
+    background: rgba(30,35,64,0.9);
+    color: #8892b0;
     cursor: pointer;
     font-size: 16px;
     display: flex;
@@ -518,7 +521,7 @@
   #counter {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
-    color: #444;
+    color: #4a5480;
     letter-spacing: 0.1em;
   }
 
@@ -739,4 +742,225 @@
   </div>
 
   <!-- ── SLIDE 8: STEP 5 ── -->
-  <div class
+  <div class="slide light">
+    <div class="full-pad">
+      <div class="eyebrow">Step 5 — Message</div>
+      <h2 class="section">What is the photographer <em>saying</em>?</h2>
+      <div class="rule"></div>
+      <p style="font-size:15px; color:var(--mid); margin-bottom:24px;">Moving beyond description to interpretation and written argument.</p>
+      <div class="quarters" style="margin-bottom:20px;">
+        <div class="technique-card">
+          <h4>Framing</h4>
+          <p>What is included — and excluded — from the shot?</p>
+        </div>
+        <div class="technique-card">
+          <h4>Perspective</h4>
+          <p>High angle = power over subject. Low angle = subject looks powerful.</p>
+        </div>
+        <div class="technique-card">
+          <h4>Light &amp; Shadow</h4>
+          <p>Bright light = hope or heroism. Darkness = threat or despair.</p>
+        </div>
+        <div class="technique-card">
+          <h4>Composition</h4>
+          <p>What is centred? What is pushed to the edge?</p>
+        </div>
+      </div>
+      <div class="message-template">
+        <p>The photographer wants the viewer to feel / think / understand <span class="blank"></span> because <span class="blank"></span>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDES 9–12: PHOTO SLIDES ── -->
+
+  <div class="slide dark">
+    <div class="photo-header">
+      <div class="ph-title">Photo 1</div>
+      <div class="ph-prompt">What's Going On in This Picture?</div>
+    </div>
+    <div class="photo-frame">
+      <img src="1777548800918_image.png" alt="Photo 1" style="max-width:100%;max-height:100%;object-fit:contain;">
+    </div>
+    <div class="step-chips">
+      <div class="chip active-chip">1 Observe</div>
+      <div class="chip">2 Question</div>
+      <div class="chip">3 Context</div>
+      <div class="chip">4 Conclude</div>
+      <div class="chip">5 Message</div>
+      <div style="margin-left:auto; font-size:13px; color:#444; font-style:italic; align-self:center;">Discuss with your partner before writing anything.</div>
+    </div>
+  </div>
+
+  <div class="slide dark">
+    <div class="photo-header">
+      <div class="ph-title">Photo 2</div>
+      <div class="ph-prompt">What's Going On in This Picture?</div>
+    </div>
+    <div class="photo-frame">
+      <img src="VTS02-22-16LN-superJumbo.webp" alt="Photo 2" style="max-width:100%;max-height:100%;object-fit:contain;">
+    </div>
+    <div class="step-chips">
+      <div class="chip active-chip">1 Observe</div>
+      <div class="chip">2 Question</div>
+      <div class="chip">3 Context</div>
+      <div class="chip">4 Conclude</div>
+      <div class="chip">5 Message</div>
+      <div style="margin-left:auto; font-size:13px; color:#444; font-style:italic; align-self:center;">Discuss with your partner before writing anything.</div>
+    </div>
+  </div>
+
+  <div class="slide dark">
+    <div class="photo-header">
+      <div class="ph-title">Photo 3</div>
+      <div class="ph-prompt">What's Going On in This Picture?</div>
+    </div>
+    <div class="photo-frame">
+      <img src="VTS11-03-14LN-superJumbo.webp" alt="Photo 3" style="max-width:100%;max-height:100%;object-fit:contain;">
+    </div>
+    <div class="step-chips">
+      <div class="chip active-chip">1 Observe</div>
+      <div class="chip">2 Question</div>
+      <div class="chip">3 Context</div>
+      <div class="chip">4 Conclude</div>
+      <div class="chip">5 Message</div>
+      <div style="margin-left:auto; font-size:13px; color:#444; font-style:italic; align-self:center;">Discuss with your partner before writing anything.</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 13: CLASS DISCUSSION ── -->
+  <div class="slide warm">
+    <div class="full-pad">
+      <div class="eyebrow">Share &amp; Debate Your Findings</div>
+      <h2 class="section">Class Discussion</h2>
+      <div class="rule gold"></div>
+      <div class="thirds" style="margin-top:24px;">
+        <div class="discussion-item">
+          <h3>Share your Observation</h3>
+          <p>What did different groups notice? What surprised you about what others saw?</p>
+        </div>
+        <div class="discussion-item">
+          <h3>Compare Questions</h3>
+          <p>Did others ask questions you hadn't thought of? What questions are still unanswered?</p>
+        </div>
+        <div class="discussion-item">
+          <h3>Debate the Message</h3>
+          <p>Did everyone reach the same conclusion about the photographer's intent? Why or why not?</p>
+        </div>
+      </div>
+      <div class="discussion-note">
+        There is no single 'correct' answer — historians and critics debate interpretation. If everyone agrees, we probably haven't looked hard enough.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 14: WRITING TASK ── -->
+  <div class="slide light">
+    <div class="full-pad">
+      <div class="split" style="align-items:start; gap:56px;">
+        <div>
+          <div class="eyebrow">Independent Task</div>
+          <h2 class="section">Writing<br>Task</h2>
+          <div class="rule gold"></div>
+          <p class="lead" style="margin-top:8px;">Write a structured image analysis of <strong>8–12 sentences</strong>.</p>
+          <p class="task-note">Use your worksheet notes &nbsp;·&nbsp; Full sentences only &nbsp;·&nbsp; 15 minutes</p>
+        </div>
+        <div>
+          <div class="para-block">
+            <div class="pb-label">§1 — Observe</div>
+            <p>Describe what you can see in the image. Include people, objects, setting, mood, and composition. Use precise vocabulary.</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§2 — Context</div>
+            <p>Explain the context surrounding the image. When and where was this taken? What situation or issue does it relate to?</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§3 — Conclude</div>
+            <p>State what you believe is actually happening in the image. Use specific visual evidence from the photograph to support your claim.</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§4 — Message</div>
+            <p>Explain the photographer's intended message and effect on the viewer. Use language techniques — framing, light, angle, symbolism — as evidence.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 15: TAKEAWAYS + HW ── -->
+  <div class="slide warm">
+    <div class="full-pad">
+      <div class="split" style="align-items:start; gap:64px;">
+        <div>
+          <div class="eyebrow">What we learned</div>
+          <h2 class="section">Key<br>Takeaways</h2>
+          <div class="rule gold"></div>
+          <div style="margin-top:16px;">
+            <div class="takeaway">
+              <span class="tk-icon">📸</span>
+              <p>Photographs are visual texts — they communicate meaning just like written texts.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon">🔍</span>
+              <p>Always observe first, then question, then seek context.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon">🧠</span>
+              <p>Context changes how we read and interpret an image.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon">✍️</span>
+              <p>Back your interpretation with specific visual evidence and language.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="hw-box">
+            <div class="hw-label">Homework</div>
+            <p>Find your own historical photograph from the NYT archive or a history website. Apply all 5 steps in writing. Bring your analysis to the next lesson — be ready to share.</p>
+          </div>
+          <p style="margin-top:20px; font-size:13px; color:var(--mid); font-style:italic; line-height:1.7;">Year 9 English &nbsp;·&nbsp; Visual Literacy &amp; Image Analysis &nbsp;·&nbsp; NYT 'What's Going On in This Picture?'</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn" id="prev">←</button>
+  <span id="counter">1 / 15</span>
+  <button class="nav-btn" id="next">→</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  document.getElementById('next').addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+  document.getElementById('prev').addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // Initialise progress bar
+  progress.style.width = `${(1 / total) * 100}%`;
+</script>
+
+</body>
+</html>
