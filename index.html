@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Read a Photograph</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #1e2340;
+    --paper:  #ffffff;
+    --warm:   #f0f2f8;
+    --red:    #e8445a;
+    --gold:   #f07c3a;
+    --blue:   #3a7ff0;
+    --mid:    #6b7280;
+    --light:  #f9f9fb;
+    --navy-light: #2a3158;
+    --red-pale: #fde8eb;
+    --blue-pale: #e8f0fe;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  /* ── DECK CONTAINER ── */
+  #deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  /* ── SLIDE BASE ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ─────────────────────────────────────────
+     SLIDE THEMES
+  ───────────────────────────────────────── */
+
+  /* DARK theme (title, photo slides) */
+  .dark {
+    background: var(--ink);
+    color: #ffffff;
+  }
+  .dark .eyebrow { color: #8892b0; }
+
+  /* LIGHT theme (framework, steps, writing) */
+  .light {
+    background: var(--light);
+    color: var(--ink);
+  }
+
+  /* WARM theme (discussion, takeaways) */
+  .warm {
+    background: var(--warm);
+    color: var(--ink);
+  }
+
+  /* INTERLUDE theme — full void, destabilising slide */
+  .interlude {
+    background: #0a0c14;
+    color: #ffffff;
+  }
+  .interlude .eyebrow { color: #444c6e; }
+  .interlude p.lead { color: #7a8299; }
+
+  /* Step colour overrides — Context uses blue */
+  .step-blue .step-num { color: var(--blue); }
+  .step-blue .step-label { color: var(--blue); }
+  .step-blue .rule { background: var(--blue); }
+  .step-blue .bullet-list li { background: var(--blue-pale); border-left-color: var(--blue); }
+
+  /* ── LAYOUT HELPERS ── */
+  .full-pad {
+    padding: 56px 72px 48px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .thirds {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+  }
+  .quarters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 18px;
+  }
+
+  h1.display {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 7vw, 88px);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+  h2.section {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .step-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(80px, 12vw, 140px);
+    line-height: 1;
+    color: var(--red);
+    letter-spacing: -0.04em;
+  }
+  .step-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: block;
+  }
+  p.lead {
+    font-size: 18px;
+    line-height: 1.65;
+    font-weight: 300;
+    max-width: 560px;
+  }
+  .dark p.lead { color: #a8b4d0; }
+  p.body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--mid);
+    font-weight: 400;
+  }
+
+  /* ── RULE ── */
+  .rule {
+    width: 48px;
+    height: 3px;
+    background: var(--red);
+    margin: 24px 0;
+  }
+  .rule.gold { background: var(--gold); }
+
+  /* ── STEP BULLET LIST ── */
+  .bullet-list {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .bullet-list li {
+    padding: 11px 14px;
+    font-size: 16px;
+    line-height: 1.5;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--red-pale);
+    border-left: 3px solid var(--red);
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .bullet-list li .icon {
+    flex-shrink: 0;
+    width: 26px;
+    text-align: center;
+    font-size: 15px;
+    padding-top: 2px;
+    color: var(--mid);
+  }
+
+  /* ── STEP PILL (framework overview) ── */
+  .step-pill {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--red);
+    background: white;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 12px;
+  }
+  .pill-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--red);
+    line-height: 1;
+    min-width: 28px;
+  }
+  .pill-text strong {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .pill-text span {
+    font-size: 14px;
+    color: var(--mid);
+  }
+
+  /* ── PHOTO SLIDE — FULL BLEED ── */
+  .photo-fullbleed {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+  }
+  .photo-fullbleed img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,12,20,0.92) 0%,
+      rgba(10,12,20,0.35) 45%,
+      rgba(10,12,20,0.0) 75%
+    );
+    pointer-events: none;
+  }
+  .photo-overlay-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(to bottom, rgba(10,12,20,0.7) 0%, transparent 100%);
+    height: 120px;
+    pointer-events: none;
+  }
+  .photo-interrogate {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 48px 56px 80px;
+  }
+  .photo-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .photo-question {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 3.5vw, 44px);
+    line-height: 1.25;
+    color: #ffffff;
+    max-width: 680px;
+    margin-bottom: 20px;
+  }
+  .photo-steps-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .photo-step-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 100px;
+    color: rgba(255,255,255,0.4);
+  }
+  .photo-missing-bleed {
+    width: 100%;
+    height: 100%;
+    background: #0f1225;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #4a5480;
+    text-align: center;
+    gap: 12px;
+  }
+
+  /* ── PHOTO SLIDE (old — keep for reference, hidden) ── */
+  .photo-frame {
+    flex: 1;
+    background: #151929;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .photo-header {
+    padding: 20px 40px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #2a3158;
+  }
+  .photo-header .ph-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--paper);
+  }
+  .photo-header .ph-prompt {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #9aa0b8;
+  }
+  .step-chips {
+    display: flex;
+    gap: 8px;
+    padding: 12px 40px;
+    border-top: 1px solid #2a3158;
+  }
+  .chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid #2a3158;
+    border-radius: 100px;
+    color: #4a5480;
+  }
+  .chip.active-chip {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(192,57,43,0.06);
+  }
+
+  /* ── TITLE SLIDE ELEMENTS ── */
+  .title-sub {
+    font-size: 16px;
+    color: #777;
+    margin-top: 28px;
+    font-weight: 300;
+    max-width: 480px;
+    line-height: 1.7;
+  }
+  .title-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 32px;
+  }
+  .meta-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8892b0;
+    padding-top: 10px;
+    border-top: 1px solid #2a3158;
+  }
+  .meta-item span {
+    display: block;
+    color: #5a6490;
+    margin-top: 4px;
+  }
+
+  /* ── WHY ANALYSE (slide 2) ── */
+  .why-card {
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .why-card:last-child { border-bottom: none; }
+  .why-card .wc-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .why-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .why-card p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--mid);
+    max-width: 520px;
+  }
+
+  /* ── WRITING TASK ── */
+  .para-block {
+    background: white;
+    border-left: 3px solid var(--gold);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    border-radius: 0 4px 4px 0;
+  }
+  .para-block .pb-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .para-block p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #444;
+  }
+  .task-note {
+    margin-top: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 16px;
+  }
+
+  /* ── TAKEAWAY LIST ── */
+  .takeaway {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .takeaway:last-child { border-bottom: none; }
+  .takeaway .tk-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .takeaway p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  /* ── HOMEWORK BOX ── */
+  .hw-box {
+    background: var(--ink);
+    color: #ffffff;
+    padding: 28px 32px;
+    margin-top: 28px;
+    border-radius: 4px;
+  }
+  .hw-box .hw-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+  }
+  .hw-box p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #a8b4d0;
+  }
+
+  /* ── MESSAGE TEMPLATE ── */
+  .message-template {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .message-template p {
+    font-size: 17px;
+    line-height: 2.0;
+    color: #333;
+  }
+  .message-template .blank {
+    display: inline-block;
+    width: 120px;
+    border-bottom: 2px solid var(--red);
+    margin: 0 4px;
+    vertical-align: bottom;
+  }
+
+  /* ── TECHNIQUE GRID ── */
+  .technique-card {
+    background: white;
+    border-radius: 4px;
+    padding: 20px;
+    border-top: 3px solid var(--red);
+  }
+  .technique-card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .technique-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed;
+    bottom: 24px;
+    right: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #2a3158;
+    background: rgba(30,35,64,0.9);
+    color: #8892b0;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .nav-btn:hover { background: var(--red); color: white; border-color: var(--red); }
+  #counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #4a5480;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── PROGRESS ── */
+  #progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--red);
+    transition: width 0.35s ease;
+    z-index: 200;
+  }
+
+  /* ── VOCABULARY GRID ── */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .vocab-card {
+    background: white;
+    border-radius: 4px;
+    padding: 14px 16px;
+    border-top: 3px solid var(--red);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .vocab-term {
+    font-family: 'Space Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .vocab-def {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #333;
+  }
+  .vocab-eg {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--mid);
+    font-style: italic;
+    margin-top: 2px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .full-pad {
+      padding: 32px 28px 80px; /* extra bottom so nav doesn't cover content */
+      justify-content: flex-start;
+    }
+    .slide {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .split {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .thirds {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .quarters {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    h1.display {
+      font-size: clamp(36px, 9vw, 56px);
+    }
+    h2.section {
+      font-size: clamp(24px, 5vw, 36px);
+    }
+    .step-num {
+      font-size: clamp(48px, 12vw, 72px);
+    }
+    p.lead {
+      font-size: 15px;
+      max-width: 100%;
+    }
+    .photo-header {
+      padding: 12px 20px 10px;
+    }
+    .step-chips {
+      padding: 10px 20px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    #nav {
+      bottom: 14px;
+      right: 16px;
+    }
+    .title-meta {
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .message-template p {
+      font-size: 14px;
+    }
+    .rule {
+      margin: 14px 0;
+    }
+    .step-label {
+      margin-bottom: 8px;
+    }
+    .bullet-list li {
+      font-size: 14px;
+      padding: 9px 12px;
+    }
+    .step-pill {
+      padding: 12px 16px;
+    }
+    .why-card {
+      padding: 18px 0;
+    }
+    /* photo slides: let image shrink, chips wrap */
+    .photo-frame {
+      min-height: 180px;
+    }
+    .step-chips .partner-note {
+      display: none; /* hide italic note on small screens, chips already wrap */
+    }
+    .vocab-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .vocab-card {
+      padding: 12px 14px;
+    }
+    .vocab-def { font-size: 12px; }
+  }
+
+  @media (max-width: 560px) {
+    .full-pad {
+      padding: 20px 16px 80px;
+    }
+    .quarters {
+      grid-template-columns: 1fr;
+    }
+    .step-chips .chip {
+      font-size: 9px;
+      padding: 4px 8px;
+    }
+    .technique-card {
+      padding: 14px;
+    }
+    .message-template {
+      padding: 18px 20px;
+    }
+    .vocab-grid { grid-template-columns: 1fr; }
+  }
+
+  .discussion-item {
+    padding: 24px;
+    background: white;
+    border-radius: 4px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .discussion-item h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .discussion-item p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--mid);
+  }
+  .discussion-note {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--ink);
+    color: #aaa;
+    border-radius: 4px;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── INTERLUDE COMPONENTS ── */
+  .void-question {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1.4;
+    color: #ffffff;
+    padding: 20px 0;
+    border-bottom: 1px solid #1a1f35;
+  }
+  .void-question:last-child { border-bottom: none; }
+  .void-question em {
+    color: var(--red);
+    font-style: normal;
+  }
+  .void-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #333d5e;
+    margin-bottom: 40px;
+  }
+
+  /* ── PLATFORM SLIDE ── */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .platform-card {
+    background: #0f1225;
+    border-radius: 4px;
+    padding: 20px 22px;
+    border-left: 3px solid var(--red);
+  }
+  .platform-card h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .platform-card p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #8892b0;
+  }
+  .platform-stat {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .platform-label {
+    font-size: 13px;
+    color: #5a6490;
+    line-height: 1.5;
+  }
+
+  /* ── SENTENCE STARTERS ── */
+  .starter-block {
+    background: #f4f6ff;
+    border-left: 3px solid var(--blue);
+    padding: 14px 18px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 10px;
+  }
+  .starter-block p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #2a2a4a;
+  }
+  .starter-block .blank {
+    display: inline-block;
+    width: 110px;
+    border-bottom: 2px solid var(--blue);
+    margin: 0 3px;
+    vertical-align: bottom;
+  }
+
+  /* ── TECHNIQUE GRID (8 cards, 4-col) ── */
+  .technique-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 560px) { .technique-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="deck" role="main" aria-label="Presentation slides">
+
+  <!-- ── SLIDE 1: TITLE ── -->
+  <div class="slide dark active" role="region" aria-label="Slide 1 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">English &nbsp;·&nbsp; Visual Literacy</div>
+      <h1 class="display">How to Read<br>a Photograph</h1>
+      <div class="rule"></div>
+      <p class="title-sub">A step-by-step guide to image analysis using a 5-stage visual inquiry framework.</p>
+      <div class="title-meta">
+        <div class="meta-item">Method<span>5-Step Visual Inquiry</span></div>
+        <div class="meta-item">Skill<span>Reading Images Critically</span></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: WHY ANALYSE ── -->
+  <div class="slide light" role="region" aria-label="Slide 2 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">The case for looking carefully</div>
+      <h2 class="section">Why Analyse Images?</h2>
+      <div class="rule"></div>
+      <div style="margin-top: 8px;">
+        <div class="why-card">
+          <div class="wc-label">Images Are Arguments</div>
+          <p>A photograph is not a window onto reality — it is a constructed argument. Every frame excludes as much as it includes.</p>
+        </div>
+        <div class="why-card">
+          <div class="wc-label">Nothing Is Neutral</div>
+          <p>Photographers choose <strong>what</strong> to shoot, <strong>when</strong>, <strong>how</strong>, and for <strong>whom</strong>. Those choices carry ideology, power, and intent.</p>
+        </div>
+        <div class="why-card">
+          <div class="wc-label">Seeing Is Political</div>
+          <p>Images shape what we fear, who we trust, what we consider normal. Analysing them is not a literacy skill — it is a survival skill.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: 5-STEP FRAMEWORK ── -->
+  <div class="slide warm" role="region" aria-label="Slide 3 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">Use these steps every time you analyse a photograph</div>
+      <h2 class="section">The 5-Step Framework</h2>
+      <div class="rule"></div>
+      <div style="margin-top: 16px;">
+        <div class="step-pill">
+          <div class="pill-num">1</div>
+          <div class="pill-text"><strong>Observe</strong><span>What do you see?</span></div>
+        </div>
+        <div class="step-pill">
+          <div class="pill-num">2</div>
+          <div class="pill-text"><strong>Question</strong><span>What don't you understand?</span></div>
+        </div>
+        <div class="step-pill">
+          <div class="pill-num">3</div>
+          <div class="pill-text"><strong>Context</strong><span>When &amp; where is this?</span></div>
+        </div>
+        <div class="step-pill">
+          <div class="pill-num">4</div>
+          <div class="pill-text"><strong>Conclude</strong><span>What is actually happening?</span></div>
+        </div>
+        <div class="step-pill">
+          <div class="pill-num">5</div>
+          <div class="pill-text"><strong>Message</strong><span>What is the photographer saying?</span></div>
+        </div>
+        <p style="margin-top:20px; font-size:13px; color:var(--mid); font-style:italic;">You will use these 5 steps with real photos today — have your analysis worksheet ready.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: VOCABULARY ── -->
+  <div class="slide warm" role="region" aria-label="Slide 4 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">Before you describe — know your terms</div>
+      <h2 class="section">Vocabulary for<br><em>Image Description</em></h2>
+      <div class="rule"></div>
+      <div class="vocab-grid">
+        <div class="vocab-card">
+          <div class="vocab-term">Foreground</div>
+          <div class="vocab-def">Closest to the viewer. Large, immediate, impossible to ignore.</div>
+          <div class="vocab-eg">"In the foreground, a woman sits facing away from the camera."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Background</div>
+          <div class="vocab-def">Furthest away. Sets the scene — or contradicts it.</div>
+          <div class="vocab-eg">"In the background, smoke rises from collapsed buildings."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Centre / Middle ground</div>
+          <div class="vocab-def">Between near and far. Where photographers often anchor the subject.</div>
+          <div class="vocab-eg">"The child stands in the centre of the frame."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Top / Bottom of frame</div>
+          <div class="vocab-def">Sky, ground, cut-off figures. What gets included at the edge is a choice.</div>
+          <div class="vocab-eg">"At the top of the frame, storm clouds dominate."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Left / Right of frame</div>
+          <div class="vocab-def">Off-centre placement creates tension, direction, or imbalance.</div>
+          <div class="vocab-eg">"On the left of the frame, a soldier stands guard."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Corner</div>
+          <div class="vocab-def">Marginal — but details placed here can carry the image's real weight.</div>
+          <div class="vocab-eg">"In the bottom-right corner, a discarded shoe lies in the mud."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">In focus / Blurred</div>
+          <div class="vocab-def">Sharpness directs attention. Blur removes a subject from importance.</div>
+          <div class="vocab-eg">"The subject is in sharp focus while the background is blurred."</div>
+        </div>
+        <div class="vocab-card">
+          <div class="vocab-term">Silhouette</div>
+          <div class="vocab-def">Dark outline against bright background. Identity hidden; shape amplified.</div>
+          <div class="vocab-eg">"Two figures appear as silhouettes against the setting sun."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: STEP 1 ── -->
+  <div class="slide light" role="region" aria-label="Slide 5 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:center;">
+        <div>
+          <div class="step-num">1</div>
+          <span class="step-label">Observe</span>
+          <h2 class="section">What do<br>you <em>see</em>?</h2>
+          <div class="rule"></div>
+          <p class="lead">Before you guess what is happening — just <strong>describe</strong> what is literally in front of you.</p>
+        </div>
+        <div>
+          <ul class="bullet-list">
+            <li><span class="icon" aria-hidden="true">👥</span>Who or what is in the image? Describe the people, objects, animals.</li>
+            <li><span class="icon" aria-hidden="true">📍</span>Where are they? Describe the setting and background.</li>
+            <li><span class="icon" aria-hidden="true">🎨</span>What colours, lighting, and mood can you see?</li>
+            <li><span class="icon" aria-hidden="true">🔍</span>What is in the foreground? What is in the background?</li>
+            <li><span class="icon" aria-hidden="true">📷</span>Is anything unusual, unexpected, or out of place?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: STEP 2 ── -->
+  <div class="slide light" role="region" aria-label="Slide 6 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:center;">
+        <div>
+          <div class="step-num">2</div>
+          <span class="step-label">Question</span>
+          <h2 class="section">What do<br>you <em>wonder</em>?</h2>
+          <div class="rule"></div>
+          <p class="lead">Good analysts ask questions — not just about what they see, but about what they don't know.</p>
+        </div>
+        <div>
+          <ul class="bullet-list">
+            <li><span class="icon" aria-hidden="true">❓</span>What is happening that you cannot explain yet?</li>
+            <li><span class="icon" aria-hidden="true">🗓️</span>When do you think this photograph was taken?</li>
+            <li><span class="icon" aria-hidden="true">🌍</span>Where in the world might this be?</li>
+            <li><span class="icon" aria-hidden="true">📸</span>Who do you think took this photo — and why?</li>
+            <li><span class="icon" aria-hidden="true">😶</span>What are the people in the image thinking or feeling?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: STEP 3 ── -->
+  <div class="slide light step-blue" role="region" aria-label="Slide 7 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:center;">
+        <div>
+          <div class="step-num">3</div>
+          <span class="step-label">Context</span>
+          <h2 class="section">What is the<br><em>context</em>?</h2>
+          <div class="rule"></div>
+          <p class="lead">Context is everything that surrounds the image — the time, place, and social situation it was taken in.</p>
+          <div style="margin-top:20px; padding:14px 16px; background:#fff3cd; border-left:3px solid var(--gold); border-radius:0 4px 4px 0; font-size:14px; color:#555; line-height:1.6;">
+            💡 Use your prior knowledge first — then your teacher will reveal the context.
+          </div>
+        </div>
+        <div>
+          <ul class="bullet-list">
+            <li><span class="icon" aria-hidden="true">🗺️</span>Where and when was this taken?</li>
+            <li><span class="icon" aria-hidden="true">🏛️</span>What social or political issues are shown?</li>
+            <li><span class="icon" aria-hidden="true">📰</span>Does this connect to a real event?</li>
+            <li><span class="icon" aria-hidden="true">👤</span>Who published or commissioned it — and for whom?</li>
+            <li><span class="icon" aria-hidden="true">🎯</span>How does context change what you see?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: STEP 4 ── -->
+  <div class="slide light" role="region" aria-label="Slide 8 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:center;">
+        <div>
+          <div class="step-num">4</div>
+          <span class="step-label">Conclude</span>
+          <h2 class="section">What is<br><em>actually</em><br>happening?</h2>
+          <div class="rule"></div>
+          <p class="lead">Combine your observations, questions, and context to build an evidence-based interpretation.</p>
+        </div>
+        <div>
+          <ul class="bullet-list">
+            <li><span class="icon" aria-hidden="true">🔗</span>How does what you see connect to the wider context?</li>
+            <li><span class="icon" aria-hidden="true">⚖️</span>What evidence supports your interpretation? Be specific.</li>
+            <li><span class="icon" aria-hidden="true">🤔</span>Could there be another reading? What might you be missing?</li>
+            <li><span class="icon" aria-hidden="true">📊</span>How reliable is this source? Could it be staged, cropped, or edited?</li>
+            <li><span class="icon" aria-hidden="true">🗣️</span>What language would you use to write about this formally?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: STEP 5 ── -->
+  <div class="slide light" role="region" aria-label="Slide 9 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:center;">
+        <div>
+          <div class="step-num">5</div>
+          <span class="step-label">Message</span>
+          <h2 class="section">How does the<br>image <em>position</em><br>the viewer?</h2>
+          <div class="rule"></div>
+          <p class="lead">Move from description to ideology. What does this image want you to believe?</p>
+        </div>
+        <div>
+          <div class="technique-grid">
+            <div class="technique-card">
+              <h4>Framing</h4>
+              <p>What is included — and excluded — from the shot?</p>
+            </div>
+            <div class="technique-card">
+              <h4>Perspective</h4>
+              <p>High angle = power over subject. Low angle = subject dominates.</p>
+            </div>
+            <div class="technique-card">
+              <h4>Light &amp; Shadow</h4>
+              <p>Brightness = hope or heroism. Darkness = threat or despair.</p>
+            </div>
+            <div class="technique-card">
+              <h4>Absence</h4>
+              <p>What has been cropped out, left unnamed, or made invisible?</p>
+            </div>
+            <div class="technique-card">
+              <h4>Gaze</h4>
+              <p>Who looks at whom? Direct eye contact demands; averted gaze objectifies.</p>
+            </div>
+            <div class="technique-card">
+              <h4>Symbolism</h4>
+              <p>What objects, colours, or gestures carry meaning beyond the literal?</p>
+            </div>
+            <div class="technique-card">
+              <h4>Audience</h4>
+              <p>Who was this made for? How does that shape what is shown?</p>
+            </div>
+            <div class="technique-card">
+              <h4>Normalisation</h4>
+              <p>What does this image treat as ordinary that you should question?</p>
+            </div>
+          </div>
+          <div class="starter-block">
+            <p>The image <em>positions</em> the viewer to see <span class="blank"></span> as <span class="blank"></span>.</p>
+          </div>
+          <div class="starter-block">
+            <p>The photograph <em>normalises / challenges</em> <span class="blank"></span> by <span class="blank"></span>.</p>
+          </div>
+          <div class="starter-block">
+            <p>The framing <em>makes it difficult</em> to see <span class="blank"></span>, which serves <span class="blank"></span>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 10: EMOTIONAL ENGINEERING / PLATFORMS ── -->
+  <div class="slide dark" role="region" aria-label="Slide 10 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">Virality · Pity economies · Algorithmic visibility</div>
+      <h2 class="section">Who Decides<br>What You <em>See</em>?</h2>
+      <div class="rule"></div>
+      <div class="platform-grid">
+        <div class="platform-card">
+          <h4>Emotional Engineering</h4>
+          <p>Platforms don't show you what is most important. They show you what generates the most <em style="color:#e8445a;font-style:normal;">response</em> — fear, outrage, grief, hope. Engagement is the metric. Truth is irrelevant to the algorithm.</p>
+        </div>
+        <div class="platform-card">
+          <h4>The Pity Economy</h4>
+          <p>Images of suffering travel furthest — if the subject is positioned as <em style="color:#e8445a;font-style:normal;">pitiable</em>, not complex. Dignity that demands something back rarely goes viral. Helplessness does.</p>
+        </div>
+        <div class="platform-card">
+          <h4>Algorithmic Visibility</h4>
+          <p>Some images are amplified; others vanish. The decision is not editorial — it is structural. Who gets seen as a victim, a threat, or a hero is partly decided by engagement data.</p>
+        </div>
+        <div class="platform-card">
+          <h4>Ask Before You Share</h4>
+          <p>Whose suffering are you circulating — and what does clicking give you? Sharing an image is not neutral. It is participation in a system that decides whose pain has currency.</p>
+        </div>
+      </div>
+      <div style="margin-top:20px; padding:14px 16px; background:#0f1225; border-left:3px solid #2a3158; border-radius:0 4px 4px 0; font-size:13px; color:#4a5480; font-family:'Space Mono',monospace; letter-spacing:0.06em;">
+        The photograph precedes you. The algorithm has already decided whether you care.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 11: ETHICAL INTERRUPTION ── -->
+  <div class="slide interlude" role="region" aria-label="Slide 11 of 17">
+    <div class="full-pad" style="justify-content:space-between; padding-top:72px; padding-bottom:72px;">
+      <div class="void-label">Stop. Read these before you continue.</div>
+      <div>
+        <div class="void-question">Who <em>chose</em> to publish this image — and why this one, not another?</div>
+        <div class="void-question">What does repeated exposure to images like this <em>do</em> to how we see the people in them?</div>
+        <div class="void-question">Is analysing suffering a neutral act — or does the classroom frame make it <em>safe</em> in ways it shouldn't be?</div>
+        <div class="void-question">You are about to look at a photograph of something that happened to someone. <em>What do you owe them?</em></div>
+        <div class="void-question" style="color:#4a5480; font-size:clamp(15px, 1.8vw, 20px);">What is impossible to see from the photographer's position?</div>
+      </div>
+      <div style="font-family:'Space Mono',monospace; font-size:11px; color:#2a3158; letter-spacing:0.15em; text-transform:uppercase;">No answers here &nbsp;·&nbsp; Only the question you're willing to ask</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDES 11–13: PHOTO SLIDES ── -->
+
+  <div class="slide dark" role="region" aria-label="Slide 12 of 17">
+    <div class="photo-fullbleed">
+      <img src="VTS11-17-14LN-superJumbo.webp" alt="Press photograph for analysis — Photo 1" onerror="this.style.display='none';this.parentElement.querySelector('.photo-missing-bleed').style.display='flex';">
+      <div class="photo-missing-bleed" style="display:none;position:absolute;inset:0;">
+        <span style="font-size:48px;">🖼️</span>
+        <p style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Image not found<br><span style="opacity:.6;font-size:10px;">VTS11-17-14LN-superJumbo.webp</span></p>
+      </div>
+      <div class="photo-overlay-top"></div>
+      <div class="photo-overlay"></div>
+      <div class="photo-interrogate">
+        <div class="photo-tag">Photo 1 &nbsp;·&nbsp; Visual Analysis</div>
+        <div class="photo-question">What do you see — and what does the image want you to feel?</div>
+        <div class="photo-steps-row">
+          <span class="photo-step-tag">1 — Observe</span>
+          <span class="photo-step-tag">2 — Question</span>
+          <span class="photo-step-tag">3 — Context</span>
+          <span class="photo-step-tag">4 — Conclude</span>
+          <span class="photo-step-tag">5 — Message</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide dark" role="region" aria-label="Slide 13 of 17">
+    <div class="photo-fullbleed">
+      <img src="VTS02-22-16LN-superJumbo.webp" alt="Press photograph for analysis — Photo 2" onerror="this.style.display='none';this.parentElement.querySelector('.photo-missing-bleed').style.display='flex';">
+      <div class="photo-missing-bleed" style="display:none;position:absolute;inset:0;">
+        <span style="font-size:48px;">🖼️</span>
+        <p style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Image not found<br><span style="opacity:.6;font-size:10px;">VTS02-22-16LN-superJumbo.webp</span></p>
+      </div>
+      <div class="photo-overlay-top"></div>
+      <div class="photo-overlay"></div>
+      <div class="photo-interrogate">
+        <div class="photo-tag">Photo 2 &nbsp;·&nbsp; Visual Analysis</div>
+        <div class="photo-question">Who has power in this frame — and who does not?</div>
+        <div class="photo-steps-row">
+          <span class="photo-step-tag">1 — Observe</span>
+          <span class="photo-step-tag">2 — Question</span>
+          <span class="photo-step-tag">3 — Context</span>
+          <span class="photo-step-tag">4 — Conclude</span>
+          <span class="photo-step-tag">5 — Message</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide dark" role="region" aria-label="Slide 14 of 17">
+    <div class="photo-fullbleed">
+      <img src="VTS11-03-14LN-superJumbo.webp" alt="Press photograph for analysis — Photo 3" onerror="this.style.display='none';this.parentElement.querySelector('.photo-missing-bleed').style.display='flex';">
+      <div class="photo-missing-bleed" style="display:none;position:absolute;inset:0;">
+        <span style="font-size:48px;">🖼️</span>
+        <p style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">Image not found<br><span style="opacity:.6;font-size:10px;">VTS11-03-14LN-superJumbo.webp</span></p>
+      </div>
+      <div class="photo-overlay-top"></div>
+      <div class="photo-overlay"></div>
+      <div class="photo-interrogate">
+        <div class="photo-tag">Photo 3 &nbsp;·&nbsp; Visual Analysis</div>
+        <div class="photo-question">What has the photographer made impossible to see?</div>
+        <div class="photo-steps-row">
+          <span class="photo-step-tag">1 — Observe</span>
+          <span class="photo-step-tag">2 — Question</span>
+          <span class="photo-step-tag">3 — Context</span>
+          <span class="photo-step-tag">4 — Conclude</span>
+          <span class="photo-step-tag">5 — Message</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 14: CLASS DISCUSSION ── -->
+  <div class="slide warm" role="region" aria-label="Slide 15 of 17">
+    <div class="full-pad">
+      <div class="eyebrow">Evidence · Disagreement · Power</div>
+      <h2 class="section">Class Discussion</h2>
+      <div class="rule gold"></div>
+      <div class="thirds" style="margin-top:24px;">
+        <div class="discussion-item">
+          <h3>Test Your Reading</h3>
+          <p>Which interpretation is most supported by specific visual evidence? Where does your reading break down?</p>
+        </div>
+        <div class="discussion-item">
+          <h3>Surface Your Assumptions</h3>
+          <p>What did you bring to this image before you even looked? Who might read it completely differently — and why?</p>
+        </div>
+        <div class="discussion-item">
+          <h3>Follow the Power</h3>
+          <p>What power structures appear invisible here? What has the photographer made impossible to see?</p>
+        </div>
+      </div>
+      <div class="discussion-note">
+        If everyone agrees, we haven't looked hard enough. The most interesting readings live at the point of disagreement.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 14: WRITING TASK ── -->
+  <div class="slide light" role="region" aria-label="Slide 16 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:start; gap:56px;">
+        <div>
+          <div class="eyebrow">Independent Task</div>
+          <h2 class="section">Writing<br>Task</h2>
+          <div class="rule gold"></div>
+          <p class="lead" style="margin-top:8px;">Write a structured image analysis of <strong>10–15 sentences</strong> across all 5 steps.</p>
+          <p class="task-note">Use your worksheet notes &nbsp;·&nbsp; Full sentences only &nbsp;·&nbsp; 15 minutes</p>
+        </div>
+        <div>
+          <div class="para-block">
+            <div class="pb-label">§1 — Observe</div>
+            <p>Describe what you can see in the image. Include people, objects, setting, mood, and composition. Use precise vocabulary.</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§2 — Question</div>
+            <p>Note what you do not yet understand. What is unexplained? What were you uncertain about before you knew the context?</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§3 — Context</div>
+            <p>Explain the context surrounding the image. When and where was this taken? What situation or issue does it relate to?</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§4 — Conclude</div>
+            <p>State what you believe is actually happening in the image. Use specific visual evidence from the photograph to support your claim.</p>
+          </div>
+          <div class="para-block">
+            <div class="pb-label">§5 — Message</div>
+            <p>Analyse how the image positions the viewer. What does it want you to feel or believe? Use specific techniques — framing, angle, light, absence — as evidence.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 16: TAKEAWAYS + HW ── -->
+  <div class="slide warm" role="region" aria-label="Slide 17 of 17">
+    <div class="full-pad">
+      <div class="split" style="align-items:start; gap:64px;">
+        <div>
+          <div class="eyebrow">What we learned</div>
+          <h2 class="section">Key<br>Takeaways</h2>
+          <div class="rule gold"></div>
+          <div style="margin-top:16px;">
+            <div class="takeaway">
+              <span class="tk-icon" aria-hidden="true">📸</span>
+              <p>Photographs are not windows — they are arguments. Every frame is a choice.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon" aria-hidden="true">🔍</span>
+              <p>Absence is evidence. What is not shown matters as much as what is.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon" aria-hidden="true">🧠</span>
+              <p>Context does not just explain an image — it transforms it. The same photograph means different things in different hands.</p>
+            </div>
+            <div class="takeaway">
+              <span class="tk-icon" aria-hidden="true">✍️</span>
+              <p>Strong analysis follows the power. Ask who benefits from this image existing — and what it makes harder to see.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="hw-box">
+            <div class="hw-label">Homework</div>
+            <p>Find a press photograph from a news website or history archive. Apply all 5 steps in writing. Then: identify one thing the image makes invisible. Bring your analysis to the next lesson — be ready to defend it.</p>
+          </div>
+          <p style="margin-top:20px; font-size:13px; color:var(--mid); font-style:italic; line-height:1.7;">English &nbsp;·&nbsp; Visual Literacy &amp; Image Analysis</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div id="nav" role="navigation" aria-label="Slide navigation">
+  <button class="nav-btn" id="prev" aria-label="Previous slide">←</button>
+  <span id="counter" aria-live="polite" aria-atomic="true">1 / 17</span>
+  <button class="nav-btn" id="next" aria-label="Next slide">→</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  // Photo slide indices (0-based): slides 12, 13, 14 = index 11, 12, 13
+  // Each photo slide uses full-bleed design; no chips to wire up
+  const photoSlideIndices = new Set([11, 12, 13]);
+
+  function updateChips(slideEl) {
+    const chips = slideEl.querySelectorAll('.chip');
+    chips.forEach(chip => chip.classList.add('active-chip'));
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    // Update slide aria-label for screen readers
+    slides[current].setAttribute('aria-label', `Slide ${current + 1} of ${total}`);
+    counter.textContent = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  document.getElementById('next').addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+  document.getElementById('prev').addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // Touch / swipe support
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      dx < 0 ? goTo(current + 1) : goTo(current - 1);
+    }
+  }, { passive: true });
+
+  // Initialise: set counter and progress from JS so they're always in sync (#1, #4)
+  counter.textContent = `${current + 1} / ${total}`;
+  progress.style.width = `${(1 / total) * 100}%`;
+  slides[0].setAttribute('aria-label', `Slide 1 of ${total}`);
+
+  // Wire up active-chip on photo slides (#7)
+  photoSlideIndices.forEach(i => { if (slides[i]) updateChips(slides[i]); });
+</script>
+
+</body>
+</html>
